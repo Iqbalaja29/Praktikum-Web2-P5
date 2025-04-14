@@ -11,7 +11,7 @@ include './config/koneksi.php';
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashnoard</title>
+  <title>Dashboard</title>
   <link
     href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
     rel="stylesheet" />
@@ -158,8 +158,9 @@ include './config/koneksi.php';
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($data['tmp_lahir']); ?></td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= date('d/m/Y', strtotime($data['tgl_lahir'])); ?></td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($data['kategori']); ?></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($data['telpon']); ?></td>
-                    <td class="px-6 py-4 text-sm text-gray-500"><?= htmlspecialchars(substr($data['alamat'], 0, 30)) . (strlen($data['alamat']) > 30 ? '...' : ''); ?></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <a href="edit_paramedik.php?id=<?= $data['id']; ?>" class="text-blue-500 hover:underline">Edit</a> |
+                    <a href="hapus_paramedik.php?id=<?= $data['id']; ?>" onclick="return confirm('Yakin hapus?')" class="text-red-500 hover:underline">Hapus</a></td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <?= htmlspecialchars($data['nama_unit'] ?? '-'); ?>
                       <div class="text-xs text-gray-400"><?= htmlspecialchars($data['kode_unit'] ?? ''); ?></div>
@@ -200,28 +201,23 @@ include './config/koneksi.php';
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
-                <?php
-                $query = mysqli_query($koneksi, "SELECT p.*, k.nama_kelurahan 
-                                                        FROM pasien p 
-                                                        LEFT JOIN kelurahan k ON p.kelurahan_id = k.id");
-                $no = 1;
-                while ($data = mysqli_fetch_assoc($query)) {
-                ?>
-                  <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= $no++; ?></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($data['kode']); ?></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($data['nama']); ?></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($data['tmp_lahir']); ?></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= date('d-m-Y', strtotime($data['tgl_lahir'])); ?></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <?= $data['gender'] == 'L' ? 'Laki-laki' : 'Perempuan'; ?>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($data['email']); ?></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($data['nama_kelurahan'] ?? 'Tidak ada'); ?></td>
-                  </tr>
-                <?php
-                }
-                ?>
+              <?php
+              $query = mysqli_query($koneksi, "SELECT pr.*, ps.nama as nama_pasien 
+                                  FROM periksa pr
+                                  LEFT JOIN pasien ps ON ps.id = pr.pasien_id");
+              $no = 1;
+              while ($data = mysqli_fetch_assoc($query)) {
+              ?>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= $no++; ?></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= htmlspecialchars($data['nama_pasien']); ?></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= date('d-m-Y', strtotime($data['tgl'])); ?></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= $data['berat']; ?></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= $data['tinggi']; ?></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?= $data['catatan']; ?></td>
+                </tr>
+              <?php } 
+              ?>
               </tbody>
             </table>
           </div>
